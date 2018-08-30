@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kgc.mapper.UserMapper">
+    <select id="login" parameterType="user" resultType="int">
+        SELECT count(1)
+        FROM t_user
+        WHERE name=#{name}
+        AND password=#{password}
+    </select>
+    <select id="getNodes" resultType="cn.kgc.vo.Node" parameterType="string">
+        SELECT m.id AS id,m.name AS text,URL AS href,parent_id AS parentId,level
+        FROM t_menu m,t_user u,t_user_role ur,t_role_menu rm
+        WHERE u.id=ur.user_id
+        AND  ur.role_id=rm.role_id
+        AND rm.menu_id=m.id
+        AND u.name = #{name}
+    </select>
+    <select id="getUsers" resultType="user">
+        SELECT *
+        FROM t_user
+    </select>
+    <insert id="addUser" parameterType="user">
+        INSERT INTO t_user (name, password)
+        VALUES (#{name},#{password});
+    </insert>
+    <select id="getUserById" parameterType="int" resultType="user">
+        SELECT *
+        FROM t_user
+        WHERE id=#{id}
+    </select>
+    <update id="updateUser" parameterType="user">
+        UPDATE t_user
+        SET name=#{name},password=#{password}
+        WHERE id=#{id}
+    </update>
+    <delete id="deleteUser" parameterType="int">
+        DELETE FROM t_user
+        WHERE id=#{id}
+    </delete>
+    <select id="getUserByName" parameterType="string" resultType="user">
+        SELECT name,password
+        FROM t_user
+        WHERE name=#{name}
+    </select>
+    <select id="getNumByName" resultType="int" parameterType="string">
+        SELECT count(1)
+        FROM t_user
+        WHERE name=#{username}
+    </select>
+    <select id="getAllPrivilege" parameterType="user" resultType="string">
+        SELECT p.privilege
+        FROM t_user u,t_user_role r,t_role_menu m ,t_menu p
+        WHERE u.id=r.user_id
+        AND r.role_id=m.role_id
+        AND m.menu_id=p.id
+        AND u.name=#{name}
+    </select>
+    <select id="getAllNodes" resultType="cn.kgc.vo.Node">
+        SELECT id,name AS text,URL AS href,parent_id AS parentId,level
+        FROM t_menu
+    </select>
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kgc.mapper.MenuMapper">
+    <select id="getMenus" resultType="menu">
+      SELECT id,name,URL AS url,parent_id AS parentId,privilege,level
+      FROM t_menu
+  </select>
+    <select id="getMenuById" resultType="menu" parameterType="int">
+        SELECT id,name,URL AS url,parent_id AS parentId,privilege,level
+        FROM t_menu
+        WHERE id=#{id}
+    </select>
+    <select id="getLevel" resultType="int" parameterType="menu">
+        SELECT level+1
+        FROM t_menu
+        WHERE id=#{parentId}
+    </select>
+    <insert id="addMenu" parameterType="menu">
+        INSERT INTO t_menu(name, URL, parent_id, privilege, level)
+        VALUES (#{name},#{url},#{parentId},#{privilege},#{level})
+    </insert>
+    <update id="updateMenu" parameterType="menu">
+        UPDATE t_menu
+        SET name=#{name},URL=#{url},parent_id=#{parentId},privilege=#{privilege},level=#{level}
+        WHERE id=#{id}
+    </update>
+    <delete id="deleteMenu" parameterType="int">
+        DELETE FROM t_menu
+        WHERE id=#{id}
+    </delete>
+</mapper>
