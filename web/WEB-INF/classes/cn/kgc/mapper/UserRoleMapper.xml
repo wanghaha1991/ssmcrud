@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kgc.mapper.UserRoleMapper">
+    <resultMap id="userRoleMap" type="userrole">
+        <id column="id" property="id"/>
+        <association property="user" javaType="user">
+            <id property="id" column="user_id"/>
+            <result property="name" column="username"/>
+        </association>
+        <association property="role" javaType="role">
+            <id property="id" column="role_id"/>
+            <result property="name" column="rolename"/>
+        </association>
+    </resultMap>
+    <select id="getUserRoles" resultMap="userRoleMap">
+        SELECT t.id,role_id,user_id,u.name AS username,r.name AS rolename
+        FROM t_user_role t,t_user u,t_role r
+	    WHERE t.role_id=r.id
+	    AND t.user_id=u.`id`
+	    ORDER BY t.id
+    </select>
+    <insert id="addRoleToUser" parameterType="userRole">
+        INSERT INTO t_user_role (user_id, role_id)
+        VALUES (#{user.id},#{role.id});
+    </insert>
+    <select id="getUserRoleById" parameterType="int">
+        SELECT t.id,role_id,user_id,u.name AS username,r.name AS rolename
+        FROM t_user_role t,t_user u,t_role r
+	    WHERE t.role_id=r.id
+	    AND t.user_id=u.`id`
+	    AND t.id=#{id}
+    </select>
+    <delete id="deleteUserRole" parameterType="int">
+        DELETE FROM t_user_role
+        WHERE id=#{id}
+    </delete>
+    <select id="getRole" parameterType="java.util.List" resultType="role">
+        SELECT id,name
+        FROM t_role
+        WHERE id NOT IN
+        <foreach item="roleId" collection="list" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </select>
+    <select id="getRoleId" parameterType="int" resultType="int">
+        SELECT role_id
+        FROM t_user_role
+        WHERE user_id=#{userId}
+    </select>
+</mapper>

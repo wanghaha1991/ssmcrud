@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--security manager-->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="loginRealm"/>
+        <property name="cacheManager" ref="ehCacheManager"/>
+        <property name="rememberMeManager.cookie.maxAge" value="300"/>
+    </bean>
+
+    <!--配置缓存-->
+    <bean id="ehCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <property name="cacheManagerConfigFile" value="classpath:ehcache.xml"/>
+    </bean>
+
+    <!--realm方法-->
+    <bean class="cn.kgc.realm.LoginRealm" id="loginRealm">
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="MD5"/>
+                <property name="hashIterations" value="1024"/>
+            </bean>
+        </property>
+    </bean>
+    <!-- Shiro生命周期处理器 -->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    <!--shiroFilter 的规则-->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="loginUrl" value="/"/>
+        <property name="successUrl" value="/main"/>
+        <property name="securityManager" ref="securityManager"/>
+        <property name="unauthorizedUrl" value="/unauthorized"/>
+        <property name="filterChainDefinitions">
+            <value>
+                / = anon
+                /login = anon
+                /img/** = anon
+                /css/** =anon
+                /js/** =anon
+                /fonts/**=anon
+                /logout = logout
+                /** = user
+            </value>
+        </property>
+    </bean>
+</beans>
